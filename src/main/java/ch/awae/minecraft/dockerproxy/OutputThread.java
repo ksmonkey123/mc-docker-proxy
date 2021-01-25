@@ -1,4 +1,4 @@
-package ch.awae.dockermcproxy;
+package ch.awae.minecraft.dockerproxy;
 
 import java.io.BufferedReader;
 import java.io.IOException;
