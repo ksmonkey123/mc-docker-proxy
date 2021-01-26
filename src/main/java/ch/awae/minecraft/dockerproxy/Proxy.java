@@ -1,5 +1,9 @@
 package ch.awae.minecraft.dockerproxy;
 
+import ch.awae.minecraft.dockerproxy.threads.InputThread;
+import ch.awae.minecraft.dockerproxy.threads.OutputThread;
+import ch.awae.minecraft.dockerproxy.threads.WatchdogTimerImpl;
+
 import java.io.IOException;
 
 public class Proxy {
@@ -23,9 +27,10 @@ public class Proxy {
 
 		final Process process = Runtime.getRuntime().exec(cmd);
 
-		OutputThread outputProxy = new OutputThread(process.getInputStream());
-		OutputThread errorProxy  = new OutputThread(process.getErrorStream());
 		InputThread inputProxy = new InputThread(path, process.getOutputStream());
+		WatchdogTimerImpl watchdog = new WatchdogTimerImpl(inputProxy, process);
+		OutputThread outputProxy = new OutputThread(process.getInputStream(), watchdog);
+		OutputThread errorProxy  = new OutputThread(process.getErrorStream(), watchdog);
 
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 			if (!process.isAlive())
@@ -54,10 +59,12 @@ public class Proxy {
 		outputProxy.setDaemon(true);
 		errorProxy.setDaemon(true);
 		inputProxy.setDaemon(true);
+		watchdog.setDaemon(true);
 
 		outputProxy.start();
 		errorProxy.start();
 		inputProxy.start();
+		watchdog.start();
 
 		int exit = process.waitFor();
 		Log.proxy("server exited with status " + exit);

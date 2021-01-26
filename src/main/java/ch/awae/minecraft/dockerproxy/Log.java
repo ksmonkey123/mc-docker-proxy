@@ -1,12 +1,12 @@
 package ch.awae.minecraft.dockerproxy;
 
-class Log {
+public class Log {
 
-    static void server(String line) {
+    public static void server(String line) {
         System.out.println("[server] " + line);
     }
 
-    static void proxy(String line) {
+    public static void proxy(String line) {
         System.out.println("[proxy ] " + line);
     }
 

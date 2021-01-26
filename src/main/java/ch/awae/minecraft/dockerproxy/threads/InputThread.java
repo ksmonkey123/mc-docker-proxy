@@ -1,4 +1,7 @@
-package ch.awae.minecraft.dockerproxy;
+package ch.awae.minecraft.dockerproxy.threads;
+
+import ch.awae.minecraft.dockerproxy.Log;
+import ch.awae.minecraft.dockerproxy.api.InputRelay;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,12 +10,12 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.util.List;
 
-class InputThread extends Thread {
+public class InputThread extends Thread implements InputRelay {
 
     private final String path;
     private final PrintWriter writer;
 
-    InputThread(String path, OutputStream stream) {
+    public InputThread(String path, OutputStream stream) {
         this.path = path;
         this.writer = new PrintWriter(stream);
     }
@@ -25,10 +28,9 @@ class InputThread extends Thread {
             if (f.exists() && f.canRead() && f.isFile()) {
                 try {
                     List<String> lines = Files.readAllLines(f.toPath());
-                    for (String string : lines) {
-                        Log.proxy(string);
-                        writer.println(string);
-                        writer.flush();
+                    for (String line : lines) {
+                        Log.proxy(line);
+                        relay(line);
                     }
                     f.delete();
                 } catch (IOException e) {
@@ -46,7 +48,8 @@ class InputThread extends Thread {
         Log.proxy("input thread terminated");
     }
 
-    void relay(String line) {
+    @Override
+    public void relay(String line) {
         writer.println(line);
         writer.flush();
     }
