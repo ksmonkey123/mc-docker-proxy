@@ -1,6 +1,7 @@
 package ch.awae.minecraft.dockerproxy.threads;
 
 import ch.awae.minecraft.dockerproxy.Log;
+import ch.awae.minecraft.dockerproxy.ProxyConfig;
 import ch.awae.minecraft.dockerproxy.api.InputRelay;
 
 import java.io.File;
@@ -15,8 +16,9 @@ public class InputThread extends Thread implements InputRelay {
     private final String path;
     private final PrintWriter writer;
 
-    public InputThread(String path, OutputStream stream) {
-        this.path = path;
+    public InputThread(ProxyConfig config, OutputStream stream) {
+        this.path = config.getInputFile();
+        System.out.println(this.path);
         this.writer = new PrintWriter(stream);
     }
 

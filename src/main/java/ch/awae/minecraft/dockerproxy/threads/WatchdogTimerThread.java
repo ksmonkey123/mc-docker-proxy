@@ -1,17 +1,18 @@
 package ch.awae.minecraft.dockerproxy.threads;
 
 import ch.awae.minecraft.dockerproxy.Log;
+import ch.awae.minecraft.dockerproxy.ProcessWrapper;
 import ch.awae.minecraft.dockerproxy.api.InputRelay;
 import ch.awae.minecraft.dockerproxy.api.WatchdogTimer;
 
-public class WatchdogTimerImpl extends Thread implements WatchdogTimer {
+public class WatchdogTimerThread extends Thread implements WatchdogTimer {
 
     private final InputRelay relay;
-    private final Process process;
+    private final ProcessWrapper process;
 
     private final Object LOCK = new Object();
 
-    public WatchdogTimerImpl(InputRelay relay, Process process) {
+    public WatchdogTimerThread(InputRelay relay, ProcessWrapper process) {
         this.relay = relay;
         this.process = process;
     }
