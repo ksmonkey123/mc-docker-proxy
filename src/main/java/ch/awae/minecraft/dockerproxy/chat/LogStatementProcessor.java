@@ -3,32 +3,22 @@ package ch.awae.minecraft.dockerproxy.chat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.concurrent.ExecutorService;
 
 @Service
 public class LogStatementProcessor {
 
-    private final Pattern chatPattern;
     private final DiscordBotService bot;
+    private final ExecutorService service;
 
     @Autowired
-    public LogStatementProcessor(DiscordBotService bot) {
+    public LogStatementProcessor(DiscordBotService bot, ExecutorService service) {
         this.bot = bot;
-        this.chatPattern = Pattern.compile("^(?:\\[.+\\] ){2}\\[[^\\<]+\\]\\: \\<(\\w+)\\> (.*)$");
+        this.service = service;
     }
 
-
-    public void process(String line) {
-        Matcher matcher = chatPattern.matcher(line);
-        if (matcher.matches()) {
-            String user = matcher.group(1);
-            String message = matcher.group(2);
-
-            bot.sendMessage(user, message);
-        }
+    public void process(String line, boolean isError) {
+        service.submit(() -> bot.sendLogLine(line, isError));
     }
-
-
 
 }

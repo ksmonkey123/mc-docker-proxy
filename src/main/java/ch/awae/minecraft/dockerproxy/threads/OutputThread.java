@@ -15,11 +15,13 @@ public class OutputThread extends Thread {
     private final BufferedReader reader;
     private final WatchdogTimer watchdog;
     private final LogStatementProcessor processor;
+    private final boolean isError;
 
-    public OutputThread(InputStream stream, WatchdogTimer watchdog, @Nullable LogStatementProcessor processor) {
+    public OutputThread(InputStream stream, WatchdogTimer watchdog, LogStatementProcessor processor, boolean isError) {
         reader = new BufferedReader(new InputStreamReader(stream));
         this.watchdog = watchdog;
         this.processor = processor;
+        this.isError = isError;
     }
 
     @Override
@@ -31,7 +33,7 @@ public class OutputThread extends Thread {
                 Log.server(line);
                 watchdog.refresh();
                 if (processor != null) {
-                    processor.process(line);
+                    processor.process(line, isError);
                 }
             }
         } catch (IOException e) {

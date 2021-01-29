@@ -33,12 +33,12 @@ public class ThreadFactory {
 
     @Bean("outputThread")
     public OutputThread createOutputThread(WatchdogTimer watchdog, LogStatementProcessor processor) {
-        return new OutputThread(processWrapper.getInputStream(), watchdog, processor);
+        return new OutputThread(processWrapper.getInputStream(), watchdog, processor, false);
     }
 
     @Bean("errorThread")
-    public OutputThread createErrorThread(WatchdogTimer watchdogTimer) {
-        return new OutputThread(processWrapper.getErrorStream(), watchdogTimer, null);
+    public OutputThread createErrorThread(WatchdogTimer watchdogTimer, LogStatementProcessor processor) {
+        return new OutputThread(processWrapper.getErrorStream(), watchdogTimer, processor, true);
     }
 
 }

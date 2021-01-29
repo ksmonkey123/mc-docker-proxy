@@ -17,18 +17,20 @@ public class DiscordBotService {
         this.config = config;
     }
 
-    public void sendMessage(String user, String message) {
-        MessageRequest messageRequest = new MessageRequest();
-        messageRequest.token = config.getToken();
-        messageRequest.user = user;
-        messageRequest.message = message;
-        http.postForObject(config.getUrl(), messageRequest, Object.class);
+    public void sendLogLine(String line, boolean error) {
+        http.postForObject(config.getUrl() + "/log", new LogRequest(line, config.getToken(), error), Object.class);
     }
 
-    static class MessageRequest {
-        public String user;
+    static class LogRequest {
         public String message;
         public String token;
+        public boolean error;
+
+        public LogRequest(String message, String token, boolean error) {
+            this.message = message;
+            this.token = token;
+            this.error = error;
+        }
     }
 
 }
